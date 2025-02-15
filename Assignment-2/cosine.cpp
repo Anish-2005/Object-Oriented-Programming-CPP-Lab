@@ -1,3 +1,9 @@
+// 1.Write a program to compute the cosine of x. The user should apply x and a positive integer n. We compute the cosine of x using the series and the computation should use all terms in the series up through the term involving xn.
+
+// cos x=1-x2/2!+x4/4!-x6/6!.....
+
+
+
 #include <iostream>
 #include <cmath>
 

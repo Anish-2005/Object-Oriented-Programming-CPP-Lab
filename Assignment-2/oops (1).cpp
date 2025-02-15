@@ -1,3 +1,11 @@
+//5.WAP to implement the following structure using OOP principle.
+
+//         1
+//        212
+//       32123
+//      4321234
+//     543212345
+
 #include <iostream>
 using namespace std;
 

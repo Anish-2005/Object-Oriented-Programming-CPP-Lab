@@ -1,3 +1,6 @@
+//3. Sort an array using selection sort.
+
+
 #include <iostream>
 using namespace std;
 
