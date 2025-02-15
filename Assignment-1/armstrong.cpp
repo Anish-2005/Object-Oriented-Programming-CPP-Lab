@@ -1,3 +1,5 @@
+//1. Write a program to find Armstrong numbers from 1 to 500.
+
 #include <iostream>
 #include <cmath>
 using namespace std;

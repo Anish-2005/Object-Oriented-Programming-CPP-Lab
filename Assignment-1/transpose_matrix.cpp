@@ -1,3 +1,6 @@
+//4.Write a program to implement matrix transpose.
+
+
 #include <iostream>
 
 using namespace std;

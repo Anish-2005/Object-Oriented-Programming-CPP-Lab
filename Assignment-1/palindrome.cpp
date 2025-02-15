@@ -1,3 +1,6 @@
+//3.Write a program to find whether a given string is Palindrome or not.
+
+
 #include<iostream>
 using namespace std;
 

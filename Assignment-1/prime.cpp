@@ -1,3 +1,7 @@
+
+//2.Write a program to find Prime numbers from 1 to 100.
+
+
 #include<iostream>
 using namespace std;
 
