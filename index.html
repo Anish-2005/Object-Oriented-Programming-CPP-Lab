@@ -140,7 +140,7 @@ int main()
     ptr_arr[1] = new Circle(3.0);
     ptr_arr[2] = new Triangle(3.0, 4.0, 5.0);
 
-    for(int k = 0; k < 3; k++)
+    for(int k = 0; k &lt; 3; k++)
     {
         cout &lt;&lt; "Area: " &lt;&lt; ptr_arr[k]-&gt;area() &lt;&lt; endl;
         cout &lt;&lt; "Perimeter: " &lt;&lt; ptr_arr[k]-&gt;perimeter() &lt;&lt; endl;
@@ -158,7 +158,7 @@ int main()
 
     <div class="code-block">
         <details>
-            <summary>2. Pure Virtual Function for Data Abstraction</summary>
+            <summary>2. Pure Virtual Function to Achieve Data Abstraction</summary>
             <pre><code class="language-cpp">#include &lt;iostream&gt;
 using namespace std;
 
@@ -221,27 +221,78 @@ int main()
 
     <div class="code-block">
         <details>
-            <summary>4. Structure with Pure Virtual Function</summary>
+            <summary>4. Pure Virtual Function Structure (A to F Hierarchy)</summary>
             <pre><code class="language-cpp">#include &lt;iostream&gt;
 using namespace std;
 
-struct StructBase
+class A
 {
-    virtual void func() = 0;
+public:
+    virtual void show() = 0;
 };
 
-struct StructDerived : public StructBase
+class B : public A
 {
-    void func()
+public:
+    void show()
     {
-        cout &lt;&lt; "Pure virtual function in structure" &lt;&lt; endl;
+        cout &lt;&lt; "Inside class B" &lt;&lt; endl;
+    }
+};
+
+class C : public A
+{
+public:
+    void show()
+    {
+        cout &lt;&lt; "Inside class C" &lt;&lt; endl;
+    }
+};
+
+class D : public B
+{
+public:
+    void show()
+    {
+        cout &lt;&lt; "Inside class D" &lt;&lt; endl;
+    }
+};
+
+class E : public B
+{
+public:
+    void show()
+    {
+        cout &lt;&lt; "Inside class E" &lt;&lt; endl;
+    }
+};
+
+class F : public C
+{
+public:
+    void show()
+    {
+        cout &lt;&lt; "Inside class F" &lt;&lt; endl;
     }
 };
 
 int main()
 {
-    StructDerived obj_w;
-    obj_w.func();
+    A* ref_p;
+
+    D obj_d;
+    E obj_e;
+    F obj_f;
+
+    ref_p = &obj_d;
+    ref_p-&gt;show();
+
+    ref_p = &obj_e;
+    ref_p-&gt;show();
+
+    ref_p = &obj_f;
+    ref_p-&gt;show();
+
     return 0;
 }</code></pre>
         </details>
