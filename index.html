@@ -1,304 +1,261 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>C++ Assignment Display</title>
-    <link href="https://cdn.jsdelivr.net/npm/prismjs/themes/prism.css" rel="stylesheet" />
-    <style>
-        body {
-            font-family: 'Segoe UI', sans-serif;
-            background-color: #f5f7fa;
-            margin: 0;
-            padding: 20px;
-        }
-        h1 {
-            text-align: center;
-            color: #333;
-        }
-        .code-block {
-            margin: 30px 0;
-            background: #fff;
-            border: 1px solid #ddd;
-            border-radius: 12px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.06);
-            overflow: hidden;
-        }
-        summary {
-            background-color: #4e73df;
-            color: white;
-            padding: 12px 20px;
-            font-size: 18px;
-            cursor: pointer;
-            border-bottom: 1px solid #ddd;
-        }
-        pre {
-            margin: 0;
-            padding: 20px;
-            overflow: auto;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <title>Text Display</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 40px;
+    }
+    textarea {
+      width: 100%;
+      height: 150px;
+    }
+    #display {
+      margin-top: 20px;
+      padding: 10px;
+      background-color: #f0f0f0;
+      white-space: pre-wrap;
+      border: 1px solid #ccc;
+    }
+  </style>
 </head>
 <body>
-    <h1>C++ Assignment Codes</h1>
 
-    <div class="code-block">
-        <details open>
-            <summary>1. Shape Class with Rectangle, Circle, Triangle</summary>
-            <pre><code class="language-cpp">#include &lt;iostream&gt;
-#include &lt;cmath&gt;
-using namespace std;
+  <h2>Paste and Display Text</h2>
+  <textarea id="inputText" placeholder="library IEEE;
+use IEEE.STD_LOGIC_1164.ALL;
 
-class Shape
-{
-public:
-    virtual double area() = 0;
-    virtual double perimeter() = 0;
-    virtual ~Shape() {}
-};
+entity piso_4bit_jk_mux is
+    Port (
+        clk     : in  std_logic;
+        load    : in  std_logic;
+        data_in : in  std_logic_vector(3 downto 0);
+        data_out: out std_logic
+    );
+end piso_4bit_jk_mux;
 
-class Rectangle : public Shape
-{
-private:
-    double len_x;
-    double wid_y;
-public:
-    Rectangle(double m, double n)
-    {
-        len_x = m;
-        wid_y = n;
+architecture Behavioral of piso_4bit_jk_mux is
+
+    component jk_flip_flop
+        Port (
+            clk : in  std_logic;
+            j   : in  std_logic;
+            k   : in  std_logic;
+            q   : out std_logic
+        );
+    end component;
+
+    signal q: std_logic_vector(3 downto 0);
+    signal j_in, k_in: std_logic_vector(3 downto 0);
+    signal mux_out: std_logic_vector(3 downto 0);
+
+begin
+
+    -- MUX logic
+    mux_gen: for i in 0 to 3 generate
+        mux_out(i) <= data_in(i) when load = '1' else
+                      (q(i+1) when i < 3 else '0'); -- Shift right
+    end generate;
+
+    -- JK input logic
+    jk_logic: for i in 0 to 3 generate
+        j_in(i) <= '1' when mux_out(i) = '1' and q(i) = '0' else '0';
+        k_in(i) <= '1' when mux_out(i) = '0' and q(i) = '1' else '0';
+    end generate;
+
+    -- JK flip-flop instantiation
+    jk_flops: for i in 0 to 3 generate
+        FF: jk_flip_flop
+            port map (
+                clk => clk,
+                j   => j_in(i),
+                k   => k_in(i),
+                q   => q(i)
+            );
+    end generate;
+
+    -- Serial output from LSB
+    data_out <= q(0);
+
+end Behavioral;
+
+
+
+
+
+library IEEE;
+use IEEE.STD_LOGIC_1164.ALL;
+
+entity tb_piso_4bit_jk_mux is
+end tb_piso_4bit_jk_mux;
+
+architecture behavior of tb_piso_4bit_jk_mux is
+    component piso_4bit_jk_mux
+        Port (
+            clk     : in  std_logic;
+            load    : in  std_logic;
+            data_in : in  std_logic_vector(3 downto 0);
+            data_out: out std_logic
+        );
+    end component;
+
+    signal clk     : std_logic := '0';
+    signal load    : std_logic := '0';
+    signal data_in : std_logic_vector(3 downto 0) := (others => '0');
+    signal data_out: std_logic;
+
+    constant clk_period : time := 10 ns;
+
+begin
+    uut: piso_4bit_jk_mux
+        port map (
+            clk     => clk,
+            load    => load,
+            data_in => data_in,
+            data_out=> data_out
+        );
+
+    clk_process: process
+    begin
+        while true loop
+            clk <= '0';
+            wait for clk_period / 2;
+            clk <= '1';
+            wait for clk_period / 2;
+        end loop;
+    end process;
+
+    stim_proc: process
+    begin
+        wait for 20 ns;
+        data_in <= "1011"; -- Example data
+        load <= '1';
+        wait for clk_period;
+        load <= '0';
+
+        wait for 4 * clk_period;
+
+        wait;
+    end process;
+
+end behavior;
+
+
+
+
+
+
+
+
+
+
+
+library IEEE;
+use IEEE.STD_LOGIC_1164.ALL;
+
+entity sipo_4bit_dff is
+    Port (
+        clk     : in  std_logic;
+        serial_in : in  std_logic;
+        parallel_out : out std_logic_vector(3 downto 0)
+    );
+end sipo_4bit_dff;
+
+architecture Behavioral of sipo_4bit_dff is
+
+    component d_flip_flop
+        Port (
+            clk : in  std_logic;
+            d   : in  std_logic;
+            q   : out std_logic
+        );
+    end component;
+
+    signal d_out : std_logic_vector(3 downto 0);
+
+begin
+    -- First flip-flop gets serial input
+    FF0: d_flip_flop port map (clk => clk, d => serial_in, q => d_out(0));
+    
+    -- Remaining flip-flops get previous q as input
+    FF1: d_flip_flop port map (clk => clk, d => d_out(0), q => d_out(1));
+    FF2: d_flip_flop port map (clk => clk, d => d_out(1), q => d_out(2));
+    FF3: d_flip_flop port map (clk => clk, d => d_out(2), q => d_out(3));
+
+    parallel_out <= d_out;
+
+end Behavioral;
+
+
+
+
+
+library IEEE;
+use IEEE.STD_LOGIC_1164.ALL;
+
+entity tb_sipo_4bit_dff is
+end tb_sipo_4bit_dff;
+
+architecture behavior of tb_sipo_4bit_dff is
+
+    component sipo_4bit_dff
+        Port (
+            clk     : in  std_logic;
+            serial_in : in  std_logic;
+            parallel_out : out std_logic_vector(3 downto 0)
+        );
+    end component;
+
+    signal clk        : std_logic := '0';
+    signal serial_in  : std_logic := '0';
+    signal parallel_out : std_logic_vector(3 downto 0);
+
+    constant clk_period : time := 10 ns;
+
+begin
+    uut: sipo_4bit_dff
+        port map (
+            clk         => clk,
+            serial_in   => serial_in,
+            parallel_out=> parallel_out
+        );
+
+    clk_process: process
+    begin
+        while true loop
+            clk <= '0';
+            wait for clk_period / 2;
+            clk <= '1';
+            wait for clk_period / 2;
+        end loop;
+    end process;
+
+    stim_proc: process
+    begin
+        wait for 20 ns;
+        -- Input: 1 0 1 1 (to be loaded MSB first)
+        serial_in <= '1'; wait for clk_period;
+        serial_in <= '0'; wait for clk_period;
+        serial_in <= '1'; wait for clk_period;
+        serial_in <= '1'; wait for clk_period;
+
+        wait;
+    end process;
+
+end behavior;
+"></textarea><br>
+  <button onclick="displayText()">Display Text</button>
+
+  <div id="display"></div>
+
+  <script>
+    function displayText() {
+      const text = document.getElementById('inputText').value;
+      document.getElementById('display').innerText = text;
     }
+  </script>
 
-    double area()
-    {
-        return len_x * wid_y;
-    }
-
-    double perimeter()
-    {
-        return 2 * (len_x + wid_y);
-    }
-
-    ~Rectangle() {}
-};
-
-class Circle : public Shape
-{
-private:
-    double rad_q;
-public:
-    Circle(double r)
-    {
-        rad_q = r;
-    }
-
-    double area()
-    {
-        return 3.14159 * rad_q * rad_q;
-    }
-
-    double perimeter()
-    {
-        return 2 * 3.14159 * rad_q;
-    }
-
-    ~Circle() {}
-};
-
-class Triangle : public Shape
-{
-private:
-    double a_t;
-    double b_t;
-    double c_t;
-public:
-    Triangle(double a, double b, double c)
-    {
-        a_t = a;
-        b_t = b;
-        c_t = c;
-    }
-
-    double area()
-    {
-        double s_v = (a_t + b_t + c_t) / 2.0;
-        return sqrt(s_v * (s_v - a_t) * (s_v - b_t) * (s_v - c_t));
-    }
-
-    double perimeter()
-    {
-        return a_t + b_t + c_t;
-    }
-
-    ~Triangle() {}
-};
-
-int main()
-{
-    Shape* ptr_arr[3];
-
-    ptr_arr[0] = new Rectangle(4.0, 5.0);
-    ptr_arr[1] = new Circle(3.0);
-    ptr_arr[2] = new Triangle(3.0, 4.0, 5.0);
-
-    for(int k = 0; k &lt; 3; k++)
-    {
-        cout &lt;&lt; "Area: " &lt;&lt; ptr_arr[k]-&gt;area() &lt;&lt; endl;
-        cout &lt;&lt; "Perimeter: " &lt;&lt; ptr_arr[k]-&gt;perimeter() &lt;&lt; endl;
-    }
-
-    for(int j = 0; j &lt; 3; j++)
-    {
-        delete ptr_arr[j];
-    }
-
-    return 0;
-}</code></pre>
-        </details>
-    </div>
-
-    <div class="code-block">
-        <details>
-            <summary>2. Pure Virtual Function to Achieve Data Abstraction</summary>
-            <pre><code class="language-cpp">#include &lt;iostream&gt;
-using namespace std;
-
-class Abstractor
-{
-public:
-    virtual void display() = 0;
-};
-
-class DataInfo : public Abstractor
-{
-public:
-    void display()
-    {
-        cout &lt;&lt; "Abstracted Data shown here" &lt;&lt; endl;
-    }
-};
-
-int main()
-{
-    DataInfo obj_z;
-    obj_z.display();
-    return 0;
-}</code></pre>
-        </details>
-    </div>
-
-    <div class="code-block">
-        <details>
-            <summary>3. Inline Function Program</summary>
-            <pre><code class="language-cpp">#include &lt;iostream&gt;
-using namespace std;
-
-class InlineSample
-{
-private:
-    int x_m;
-    int y_n;
-public:
-    InlineSample(int a, int b)
-    {
-        x_m = a;
-        y_n = b;
-    }
-
-    inline int sum()
-    {
-        return x_m + y_n;
-    }
-};
-
-int main()
-{
-    InlineSample s_k(5, 10);
-    cout &lt;&lt; "Sum: " &lt;&lt; s_k.sum() &lt;&lt; endl;
-    return 0;
-}</code></pre>
-        </details>
-    </div>
-
-    <div class="code-block">
-        <details>
-            <summary>4. Pure Virtual Function Structure (A to F Hierarchy)</summary>
-            <pre><code class="language-cpp">#include &lt;iostream&gt;
-using namespace std;
-
-class A
-{
-public:
-    virtual void show() = 0;
-};
-
-class B : public A
-{
-public:
-    void show()
-    {
-        cout &lt;&lt; "Inside class B" &lt;&lt; endl;
-    }
-};
-
-class C : public A
-{
-public:
-    void show()
-    {
-        cout &lt;&lt; "Inside class C" &lt;&lt; endl;
-    }
-};
-
-class D : public B
-{
-public:
-    void show()
-    {
-        cout &lt;&lt; "Inside class D" &lt;&lt; endl;
-    }
-};
-
-class E : public B
-{
-public:
-    void show()
-    {
-        cout &lt;&lt; "Inside class E" &lt;&lt; endl;
-    }
-};
-
-class F : public C
-{
-public:
-    void show()
-    {
-        cout &lt;&lt; "Inside class F" &lt;&lt; endl;
-    }
-};
-
-int main()
-{
-    A* ref_p;
-
-    D obj_d;
-    E obj_e;
-    F obj_f;
-
-    ref_p = &obj_d;
-    ref_p-&gt;show();
-
-    ref_p = &obj_e;
-    ref_p-&gt;show();
-
-    ref_p = &obj_f;
-    ref_p-&gt;show();
-
-    return 0;
-}</code></pre>
-        </details>
-    </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/prismjs/prism.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/prismjs/components/prism-cpp.min.js"></script>
 </body>
 </html>
