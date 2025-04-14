@@ -20,7 +20,8 @@ import {
   FiLink,
   FiRefreshCw,
   FiFileText,
-  FiAlertTriangle
+  FiAlertTriangle,
+  FiClipboard
 } from 'react-icons/fi';
 
 const assignments = [
@@ -2012,7 +2013,20 @@ export default function LabsPage() {
                  <FiHome className="text-blue-400" />
               Home
             </Link>
-           
+            <Link
+              to="/compile"
+              className="px-5 py-2.5 rounded-lg bg-gray-800 hover:bg-gray-700/90 text-gray-100 transition-all duration-300 border border-gray-700 flex items-center gap-2 text-sm"
+            >
+                <FiCode className="text-blue-400" />
+              Compiler
+            </Link>
+            <Link
+              to="/learn"
+              className="px-5 py-2.5 rounded-lg bg-gray-800 hover:bg-gray-700/90 text-gray-100 transition-all duration-300 border border-gray-700 flex items-center gap-2 text-sm"
+            >
+                <FiBook className="text-blue-400" />
+              Learn
+            </Link>
           </motion.div>
           </div>
         </div>
@@ -2060,77 +2074,89 @@ export default function LabsPage() {
 
         {/* Popup Overlay */}
         <AnimatePresence>
-          {isPopupOpen && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="fixed inset-0 z-50 backdrop-blur-md bg-black/50 flex items-center justify-center"
-              onClick={closePopup}
-            >
-              <motion.div
-                initial={{ scale: 0.8, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                exit={{ scale: 0.8, opacity: 0 }}
-                className="bg-gray-800/90 backdrop-blur-xl rounded-xl border border-cyan-400/30 w-[110vw] max-w-4xl max-h-[78vh] overflow-y-auto"
-                onClick={(e) => e.stopPropagation()}
-              >
-                <div className="p-8 relative">
-                  <button
-                    onClick={closePopup}
-                    className="absolute top-6 right-6 p-2 rounded-full hover:bg-gray-700/50 transition-colors"
-                  >
-                    <FiX className="text-xl text-cyan-400" />
-                  </button>
+  {isPopupOpen && (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 z-50 backdrop-blur-md bg-black/50 flex items-center justify-center"
+      onClick={closePopup}
+    >
+      <motion.div
+        initial={{ scale: 0.8, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        exit={{ scale: 0.8, opacity: 0 }}
+        className="bg-gray-800/90 backdrop-blur-xl rounded-xl border border-cyan-400/30 w-[110vw] max-w-4xl max-h-[78vh] overflow-y-auto"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="p-8 relative">
+          <button
+            onClick={closePopup}
+            className="absolute top-6 right-6 p-2 rounded-full hover:bg-gray-700/50 transition-colors"
+          >
+            <FiX className="text-xl text-cyan-400" />
+          </button>
 
-                  {selectedAssignment && (
-                    <>
-                      <div className="flex items-center mb-8">
-                        <div className="text-4xl text-cyan-400 mr-4">
-                          {selectedAssignment.icon}
-                        </div>
-                        <h2 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-300 to-cyan-200">
-                          {selectedAssignment.title}
-                        </h2>
-                      </div>
-
-                      <div className="space-y-8">
-                        {selectedAssignment.problems.map((problem, pIndex) => (
-                          <div key={pIndex} className="bg-gray-700/30 p-6 rounded-xl">
-                            <h4 className="text-xl font-medium text-blue-100 mb-6">
-                              {problem.question}
-                            </h4>
-                            
-                            <div className="bg-gray-900/80 rounded-xl overflow-hidden mb-6">
-                              <div className="flex items-center bg-gray-800 px-4 py-3">
-                                <div className="flex space-x-2 mr-3">
-                                  <div className="w-3 h-3 rounded-full bg-red-500"></div>
-                                  <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
-                                  <div className="w-3 h-3 rounded-full bg-green-500"></div>
-                                </div>
-                                <div className="text-sm text-gray-400">solution.cpp</div>
-                              </div>
-                              <pre className="p-6 text-sm text-green-300 font-mono overflow-x-auto">
-                                {problem.code}
-                              </pre>
-                            </div>
-
-                            <div className="bg-gray-900/80 p-6 rounded-xl">
-                              <span className="text-blue-200 text-sm font-medium">Output:</span>
-                              <pre className="text-gray-300 text-sm font-mono whitespace-pre-wrap mt-4">
-                                {problem.output}
-                              </pre>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </>
-                  )}
+          {selectedAssignment && (
+            <>
+              <div className="flex items-center mb-8">
+                <div className="text-4xl text-cyan-400 mr-4">
+                  {selectedAssignment.icon}
                 </div>
-              </motion.div>
-            </motion.div>
+                <h2 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-300 to-cyan-200">
+                  {selectedAssignment.title}
+                </h2>
+              </div>
+
+              <div className="space-y-8">
+                {selectedAssignment.problems.map((problem, pIndex) => (
+                  <div key={pIndex} className="bg-gray-700/30 p-6 rounded-xl">
+                    <h4 className="text-xl font-medium text-blue-100 mb-6">
+                      {problem.question}
+                    </h4>
+
+                    {/* Code block with copy button */}
+                    <div className="bg-gray-900/80 rounded-xl overflow-hidden mb-6 relative">
+  <div className="flex items-center bg-gray-800 px-4 py-3">
+    <div className="flex space-x-2 mr-3">
+      <div className="w-3 h-3 rounded-full bg-red-500"></div>
+      <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
+      <div className="w-3 h-3 rounded-full bg-green-500"></div>
+    </div>
+    <div className="text-sm text-gray-400">solution.cpp</div>
+  </div>
+
+  <pre className="p-6 text-sm text-green-300 font-mono overflow-x-auto">
+    {problem.code}
+  </pre>
+
+  {/* Copy Icon Button */}
+  <button
+    onClick={() => navigator.clipboard.writeText(problem.code)}
+    className="absolute top-1.5 right-1.5 p-2 rounded-md bg-gray-700 hover:bg-gray-600 text-cyan-300 text-lg"
+    title="Copy to clipboard"
+  >
+    <FiClipboard />
+  </button>
+</div>
+
+                    <div className="bg-gray-900/80 p-6 rounded-xl">
+                      <span className="text-blue-200 text-sm font-medium">Output:</span>
+                      <pre className="text-gray-300 text-sm font-mono whitespace-pre-wrap mt-4">
+                        {problem.output}
+                      </pre>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </>
           )}
-        </AnimatePresence>
+        </div>
+      </motion.div>
+    </motion.div>
+  )}
+</AnimatePresence>
+
 
        
       </div>
