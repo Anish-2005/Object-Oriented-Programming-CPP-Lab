@@ -163,20 +163,7 @@ int main() {
                              <FiHome className="text-blue-400" />
                           Home
                         </Link>
-                        <Link
-                          to="/labs"
-                          className="px-5 py-2.5 rounded-lg bg-gray-800 hover:bg-gray-700/90 text-gray-100 transition-all duration-300 border border-gray-700 flex items-center gap-2 text-sm"
-                        >
-                            <FiGitlab className="text-blue-400" />
-                           Labs
-                        </Link>
-                        <Link
-                          to="/learn"
-                          className="px-5 py-2.5 rounded-lg bg-gray-800 hover:bg-gray-700/90 text-gray-100 transition-all duration-300 border border-gray-700 flex items-center gap-2 text-sm"
-                        >
-                            <FiBook className="text-blue-400" />
-                          Learn
-                        </Link>
+                        
                       </motion.div>
           </div>
         </div>
