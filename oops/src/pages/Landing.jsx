@@ -4,9 +4,7 @@ import { motion } from 'framer-motion';
 import { FiCode, FiCpu, FiBookOpen, FiPlus } from 'react-icons/fi';
 
 const Landing = () => {
-  useEffect(() => {
-    document.title = "OOP with C++ Labs | Master Object-Oriented Programming";
-  }, []);
+  
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 to-blue-900 text-white">
