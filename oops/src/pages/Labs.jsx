@@ -18,7 +18,9 @@ import {
   FiArrowUp,
   FiArrowDown,
   FiLink,
-  FiRefreshCw
+  FiRefreshCw,
+  FiFileText,
+  FiAlertTriangle
 } from 'react-icons/fi';
 
 const assignments = [
@@ -1793,42 +1795,141 @@ Shape Destructor
     ]
   },
   {
-    title: "Templates",
-    icon: <FiFolder />,
+    title: "String",
+    icon: <FiFileText />,
     problems: [
       {
-        question: "Create a generic Array class template",
-        code: `template <typename T>
-class Array {
-  private:
-    T *data;
-    int size;
-  
-  public:
-    Array(int s) : size(s) { data = new T[size]; }
-    ~Array() { delete[] data; }
-};`,
-        output: "Array of size 5 created"
+        question: "WAP in C++ to implement various string operations",
+        code: `#include <iostream>
+#include <string>
+#include <algorithm>
+using namespace std;
+
+int main()
+{
+    string str_a;
+    cout << "Enter a string: ";
+    getline(cin, str_a);
+    cout << "Original String: "<<str_a<<endl;
+    cout << "String Length: " << str_a.length()<<endl;
+    string str_copy = str_a;
+    cout << "Copy of String: " << str_copy<<endl;
+    reverse(str_copy.begin(), str_copy.end());
+    cout << "Reversed String: "<<str_copy<< endl;
+    transform(str_a.begin(), str_a.end(),str_a.begin(),::toupper);
+    cout << "Uppercase: " << str_a << endl;
+    transform(str_a.begin(), str_a.end(), str_a.begin(),::tolower);
+    cout << "Lowercase: " << str_a << endl;
+ 
+    return 0;
+}
+`,
+        output: `Enter a string: Hello World
+Original String: Hello World
+String Length: 11
+Copy of String: Hello World
+Reversed String: dlroW olleH
+Uppercase: HELLO WORLD
+Lowercase: hello world
+`
+      },
+      {
+        question: "WAP in C++ to print all Permutations of given String",
+        code: `#include <iostream>
+#include <string>
+#include <algorithm>
+using namespace std;
+
+int main()
+{
+    string input_val;
+    cout << "Enter a string to find permutations: ";
+    cin >> input_val;
+    sort(input_val.begin(), input_val.end());
+    cout << "Permutations:\n";
+    do
+    {
+        cout << input_val << endl;
+    } while (next_permutation(input_val.begin(), input_val.end()));
+
+    return 0;
+}`,
+        output: `Enter a string to find permutations: ABC
+Permutations:
+ABC
+ACB
+BAC
+BCA
+CAB
+CBA
+`
       }
     ]
   },
   {
-    title: "Templates",
-    icon: <FiFolder />,
+    title: "Exception Handling",
+    icon: <FiAlertTriangle />,
     problems: [
       {
-        question: "Create a generic Array class template",
-        code: `template <typename T>
-class Array {
-  private:
-    T *data;
-    int size;
-  
-  public:
-    Array(int s) : size(s) { data = new T[size]; }
-    ~Array() { delete[] data; }
-};`,
-        output: "Array of size 5 created"
+        question: "WAP in C++ containing an exception. Use a try block to throw it and a catch block to handle it",
+        code: `#include<iostream>
+using namespace std;
+
+int main() {
+    try {
+        throw 10;
+    } catch(int e) {
+        cout << "Exception caught: " << e << endl;
+    }
+    return 0;
+}
+
+`,
+        output: "Exception caught: 10"
+      },
+      {
+        question: "WAP in C++ to illustrate the application of multiple catch statements",
+        code: `#include<iostream>
+using namespace std;
+
+int main() {
+    try {
+        throw 3.14;
+    } catch(int e) {
+        cout << "Integer exception caught: " << e << endl;
+    } catch(double e) {
+        cout << "Double exception caught: " << e << endl;
+    } catch(...) {
+        cout << "Default exception caught" << endl;
+    }
+    return 0;
+}`,
+        output: "Double exception caught: 3.14"
+      },
+      {
+        question: "WAP in C++ to demonstrate the concept of rethrowing an exception",
+        code: `#include<iostream>
+using namespace std;
+
+void test() {
+    try {
+        throw "Error";
+    } catch(const char* msg) {
+        cout << "Caught in test(): " << msg << endl;
+        throw;
+    }
+}
+int main() {
+    try {
+        test();
+    } catch(const char* msg) {
+        cout << "Caught in main(): " << msg << endl;
+    }
+    return 0;
+}`,
+        output: `Caught in test(): Error
+Caught in main(): Error
+`
       }
     ]
   },

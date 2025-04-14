@@ -78,13 +78,7 @@ const Landing = () => {
               whileTap={{ scale: 0.98 }}
               transition={{ type: 'spring', stiffness: 400, damping: 10 }}
             >
-              <Link
-                to="/add"
-                className="px-5 py-2.5 rounded-lg bg-gradient-to-br from-blue-600 to-cyan-500 hover:from-blue-500 hover:to-cyan-400 text-white transition-all duration-300 shadow-lg hover:shadow-blue-500/30 flex items-center gap-2 text-sm font-medium"
-              >
-                <FiPlus className="text-white" />
-                Add New Lab
-              </Link>
+             
             </motion.div>
           </div>
         </div>
@@ -240,46 +234,14 @@ const Landing = () => {
               <div className="ml-4 text-sm text-gray-400">main.cpp</div>
             </div>
             <pre className="p-6 overflow-x-auto text-green-400 font-mono text-sm md:text-base">
-              {`#include <iostream>
+              {`#include<iostream>
 using namespace std;
 
-class Shape {
-protected:
-  double width, height;
-public:
-  void setDimensions(double w, double h) {
-    width = w;
-    height = h;
-  }
-  virtual double area() = 0; // Pure virtual function
-};
-
-class Rectangle : public Shape {
-public:
-  double area() override {
-    return width * height;
-  }
-};
-
-class Triangle : public Shape {
-public:
-  double area() override {
-    return 0.5 * width * height;
-  }
-};
-
 int main() {
-  Rectangle rect;
-  Triangle tri;
-  
-  rect.setDimensions(5, 7);
-  tri.setDimensions(5, 7);
-  
-  cout << "Rectangle area: " << rect.area() << endl;
-  cout << "Triangle area: " << tri.area() << endl;
-  
-  return 0;
-}`}
+    cout << "Hello, World!" << endl;
+    return 0;
+}
+`}
             </pre>
           </motion.div>
         </div>
