@@ -196,7 +196,7 @@ Distributed under the MIT License. See `LICENSE` for more information.
 
 ## 💬 Contact
 
-Anish - [@your_twitter](https://twitter.com/your_twitter) - your.email@example.com
+Anish  - anishseth0510@gmail.com
 
 ---
 
