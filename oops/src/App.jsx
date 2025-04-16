@@ -1,7 +1,7 @@
 // src/App.jsx
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Landing from './pages/Landing';
-import Labs from './pages/Labs';
+import Labs from './pages/Lab';
 import AddLab from './pages/AddLab';
 import Compiler from './pages/Complier';
 import Learn from './pages/Learn';
