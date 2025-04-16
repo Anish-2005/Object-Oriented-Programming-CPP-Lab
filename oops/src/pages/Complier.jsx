@@ -170,14 +170,14 @@ int main() {
       </motion.nav>
 
       {/* Main Content */}
-      <div className="container mx-auto py-12 px-4 relative z-10">
+      <div className="container mx-auto   relative z-10">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="grid grid-cols-1 lg:grid-cols-2 gap-8"
+          className="py-12 grid grid-cols-1 lg:grid-cols-2 gap-8"
         >
           {/* Code Editor */}
-          <div className="bg-gray-800/80 backdrop-blur-sm rounded-xl border border-blue-700/50">
+          <div className="ml-4 bg-gray-800/80 backdrop-blur-sm rounded-xl border border-blue-700/50">
             <div className="flex items-center bg-gray-900/80 px-4 py-3 border-b border-blue-800/50">
               <div className="flex space-x-2 mr-3">
                 <div className="w-3 h-3 rounded-full bg-red-500"></div>
@@ -195,7 +195,7 @@ int main() {
           </div>
 
           {/* Output Panel */}
-          <div className="bg-gray-800/80 backdrop-blur-sm rounded-xl border border-blue-700/50">
+          <div className="mr-4 bg-gray-800/80 backdrop-blur-sm rounded-xl border border-blue-700/50">
             <div className="flex items-center justify-between bg-gray-900/80 px-4 py-3 border-b border-blue-800/50">
               <div className="flex items-center">
                 <div className="flex space-x-2 mr-3">
@@ -249,7 +249,7 @@ int main() {
 
         {/* Footer */}
        <motion.footer 
-               className="mt-30 bg-blue-900/80 backdrop-blur-md py-12 relative z-10"
+               className="mt-16 bg-blue-900/80 backdrop-blur-md py-12 relative z-10"
                initial={{ opacity: 0 }}
                whileInView={{ opacity: 1 }}
                transition={{ duration: 0.8 }}

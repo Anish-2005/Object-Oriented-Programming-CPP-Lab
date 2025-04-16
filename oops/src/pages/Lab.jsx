@@ -213,7 +213,7 @@ export default function LabsPage() {
       </motion.nav>
 
       {/* Main Content */}
-      <div className="container mx-auto py-16 px-4 relative z-10">
+      <div className="container mx-auto pt-16 px-0 relative z-10">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -240,7 +240,7 @@ export default function LabsPage() {
         whileHover={{ y: -5 }}
         whileTap={{ scale: 0.98 }}
       >
-        <div className="bg-blue-900/50 backdrop-blur-sm p-6 rounded-xl border border-blue-700/50 hover:border-cyan-500/50 transition-all duration-500 hover:shadow-lg hover:shadow-blue-500/20 h-full">
+        <div className="mx-2   bg-blue-900/50 backdrop-blur-sm p-6 rounded-xl border border-blue-700/50 hover:border-cyan-500/50 transition-all duration-500 hover:shadow-lg hover:shadow-blue-500/20 h-full">
           <div className="text-4xl mb-4 text-cyan-400">
             <IconComponent />
           </div>
@@ -528,7 +528,7 @@ export default function LabsPage() {
 </AnimatePresence>
         {/* Footer */}
         <motion.footer 
-                className="mt-30 bg-blue-900/80 backdrop-blur-md py-12 relative z-10"
+                className="mt-64 mb-0 bg-blue-900/80 backdrop-blur-md py-12 relative z-10"
                 initial={{ opacity: 0 }}
                 whileInView={{ opacity: 1 }}
                 transition={{ duration: 0.8 }}
