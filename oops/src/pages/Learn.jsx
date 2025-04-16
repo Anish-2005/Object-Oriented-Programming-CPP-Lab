@@ -474,17 +474,25 @@ export default function SyllabusPage() {
       </div>
 
       {/* Footer */}
-      <motion.footer 
-        className="bg-blue-900/80 backdrop-blur-md py-12 mt-24"
-        initial={{ opacity: 0 }}
-        whileInView={{ opacity: 1 }}
-      >
-        <div className="container mx-auto px-4 text-center">
-          <p className="text-blue-200">
-            © {new Date().getFullYear()} PCC-CSBS402 Course Materials | MIT License
-          </p>
-        </div>
-      </motion.footer>
+     <motion.footer 
+             className="bg-blue-900/80 backdrop-blur-md py-12 relative z-10"
+             initial={{ opacity: 0 }}
+             whileInView={{ opacity: 1 }}
+             transition={{ duration: 0.8 }}
+             viewport={{ once: true }}
+           >
+             <div className="container mx-auto px-4 text-center">
+               <motion.p 
+                 className="text-blue-200"
+                 initial={{ y: 20, opacity: 0 }}
+                 whileInView={{ y: 0, opacity: 1 }}
+                 transition={{ delay: 0.2 }}
+                 viewport={{ once: true }}
+               >
+                 © {new Date().getFullYear()} | OOP with C++ Lab Repository 
+               </motion.p>
+             </div>
+           </motion.footer>
     </div>
   );
 }

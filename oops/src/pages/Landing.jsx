@@ -261,7 +261,7 @@ int main() {
             transition={{ delay: 0.2 }}
             viewport={{ once: true }}
           >
-            © {new Date().getFullYear()} OOP with C++ Lab Repository | Master Polymorphism, Encapsulation, and Inheritance
+            © {new Date().getFullYear()} | OOP with C++ Lab Repository 
           </motion.p>
         </div>
       </motion.footer>
