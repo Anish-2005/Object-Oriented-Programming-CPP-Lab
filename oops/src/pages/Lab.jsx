@@ -26,7 +26,7 @@ export default function LabsPage() {
   useEffect(() => {
     const fetchAssignments = async () => {
       try {
-        const response = await fetch('http://localhost:5000/api/assignments');
+        const response = await fetch('https://object-oriented-programming-cpp-lab.onrender.com/api/assignments');
         if (!response.ok) throw new Error('Failed to fetch assignments');
         const { data } = await response.json();
         
@@ -80,7 +80,7 @@ export default function LabsPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch('http://localhost:5000/api/assignments', {
+      const response = await fetch('https://object-oriented-programming-cpp-lab.onrender.com/api/assignments', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData)
@@ -105,7 +105,7 @@ export default function LabsPage() {
   };
   const handleDelete = async (id) => {
     try {
-      const response = await fetch(`http://localhost:5000/api/assignments/${id}`, {
+      const response = await fetch(`https://object-oriented-programming-cpp-lab.onrender.com/api/assignments/${id}`, {
         method: 'DELETE'
       });
       if (!response.ok) 
