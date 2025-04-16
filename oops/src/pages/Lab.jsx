@@ -528,7 +528,7 @@ export default function LabsPage() {
 </AnimatePresence>
         {/* Footer */}
         <motion.footer 
-                className="bg-blue-900/80 backdrop-blur-md py-12 relative z-10"
+                className="mt-30 bg-blue-900/80 backdrop-blur-md py-12 relative z-10"
                 initial={{ opacity: 0 }}
                 whileInView={{ opacity: 1 }}
                 transition={{ duration: 0.8 }}
