@@ -3,11 +3,36 @@ import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   FiCode, FiBookOpen, FiHome, FiX, FiClipboard, 
-  FiTrash2, FiLock, FiPlus 
+  FiTrash2, FiLock, FiPlus,
+  FiFolder,
+  FiActivity,
+  FiGrid,
+  FiArchive,
+  FiBox,
+  FiGitlab,
+  FiArrowUp,
+  FiArrowDown,
+  FiLink,
+  FiRefreshCw,
+  FiFileText,
+  FiAlertTriangle
 } from 'react-icons/fi';
 
 const iconComponents = {
-  FiCode, FiBookOpen, FiHome, FiX, FiClipboard, FiTrash2, FiLock, FiPlus
+  FiCode, FiBookOpen, FiHome, FiX, FiClipboard, 
+  FiTrash2, FiLock, FiPlus,
+  FiFolder,
+  FiActivity,
+  FiGrid,
+  FiArchive,
+  FiBox,
+  FiGitlab,
+  FiArrowUp,
+  FiArrowDown,
+  FiLink,
+  FiRefreshCw,
+  FiFileText,
+  FiAlertTriangle
 };
 
 export default function LabsPage() {
