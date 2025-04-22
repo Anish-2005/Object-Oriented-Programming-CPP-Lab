@@ -72,18 +72,14 @@ const upload = multer({
   fileFilter
 });
 
-// CORS Configuration
-const corsOptions = {
-  origin: process.env.NODE_ENV === 'production' 
-    ? process.env.FRONTEND_URL 
-    : 'http://localhost:3000',
+// More permissive but slightly more secure than completely open
+app.use(cors({
+  origin: true,  // Reflects the request origin
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
-  credentials: true,
+  credentials: false,  // Still don't allow credentials
   optionsSuccessStatus: 200
-};
-
-app.use(cors(corsOptions));
+}));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
