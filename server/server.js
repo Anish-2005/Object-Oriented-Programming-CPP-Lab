@@ -31,9 +31,11 @@ const assignmentSchema = new mongoose.Schema({
   createdAt: { type: Date, default: Date.now }
 });
 
+// Create separate models for OOP and C assignments
 const Assignment = mongoose.model('Assignment', assignmentSchema);
+const CAssignment = mongoose.model('CAssignment', assignmentSchema);
 
-// Routes
+// Routes for OOP Assignments
 app.get('/api/assignments', async (req, res) => {
   try {
     const assignments = await Assignment.find().sort({ createdAt: -1 });
@@ -57,6 +59,35 @@ app.delete('/api/assignments/:id', async (req, res) => {
   try {
     await Assignment.findByIdAndDelete(req.params.id);
     res.json({ success: true, message: 'Assignment deleted' });
+  } catch (err) {
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
+// New Routes for C Programming Assignments
+app.get('/api/c-assignments', async (req, res) => {
+  try {
+    const assignments = await CAssignment.find().sort({ createdAt: -1 });
+    res.json({ success: true, data: assignments });
+  } catch (err) {
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
+app.post('/api/c-assignments', async (req, res) => {
+  try {
+    const newAssignment = new CAssignment(req.body);
+    const savedAssignment = await newAssignment.save();
+    res.status(201).json({ success: true, data: savedAssignment });
+  } catch (err) {
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
+app.delete('/api/c-assignments/:id', async (req, res) => {
+  try {
+    await CAssignment.findByIdAndDelete(req.params.id);
+    res.json({ success: true, message: 'C Assignment deleted' });
   } catch (err) {
     res.status(500).json({ success: false, message: 'Server error' });
   }
