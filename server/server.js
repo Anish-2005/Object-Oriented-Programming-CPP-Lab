@@ -19,11 +19,10 @@ mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/cpp-labs'
 // Configure file storage
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-   // Ensure the upload directory exists and has proper permissions
-const uploadDir = 'public/uploads';
-if (!fs.existsSync(uploadDir)) {
-  fs.mkdirSync(uploadDir, { recursive: true });
-}
+    const uploadDir = 'public/uploads';
+    if (!fs.existsSync(uploadDir)) {
+      fs.mkdirSync(uploadDir, { recursive: true });
+    }
     cb(null, uploadDir);
   },
   filename: (req, file, cb) => {
@@ -97,47 +96,27 @@ const handleError = (res, err, status = 500) => {
 };
 
 // File Upload Endpoint
-app.post('/api/upload', upload.single('image'), async (req, res) => {
+app.post('/api/upload', upload.single('image'), (req, res) => {
   try {
     if (!req.file) {
       return res.status(400).json({ 
         success: false, 
-        message: 'No file was uploaded' 
+        message: 'No file uploaded' 
       });
     }
-
-    // Verify file was actually written to disk
-    const filePath = path.join(req.file.destination, req.file.filename);
-    try {
-      await fs.promises.access(filePath, fs.constants.F_OK);
-    } catch (err) {
-      console.error('Uploaded file not found:', filePath);
-      return res.status(500).json({ 
-        success: false, 
-        message: 'File upload failed - storage error' 
-      });
-    }
-
+    
+    // Construct the URL where the image can be accessed
     const imageUrl = `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}`;
     
     res.json({ 
       success: true, 
-      imageUrl,
-      fileInfo: {
-        originalName: req.file.originalname,
-        size: req.file.size,
-        mimetype: req.file.mimetype
-      }
+      imageUrl 
     });
   } catch (err) {
-    console.error('Upload error:', err);
-    res.status(500).json({ 
-      success: false, 
-      message: err.message || 'Upload failed',
-      errorDetails: process.env.NODE_ENV === 'development' ? err.stack : undefined
-    });
+    handleError(res, err);
   }
 });
+
 // Routes for OOP Assignments
 app.get('/api/assignments', async (req, res) => {
   try {
