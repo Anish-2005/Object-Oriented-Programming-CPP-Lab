@@ -7,7 +7,7 @@ const path = require('path');
 const app = express();
 
 // Database Connection
-mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/cpp-labs', {
+mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/cpp-labs?retryWrites=false', {
   useNewUrlParser: true,
   useUnifiedTopology: true,
   serverSelectionTimeoutMS: 5000,
