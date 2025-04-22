@@ -24,6 +24,14 @@ const problemSchema = new mongoose.Schema({
   output: String
 });
 
+const architectureProblemSchema = new mongoose.Schema({
+  question: String,
+  moduleCode: String,
+  rtlImage: String, // Base64 encoded image or URL
+  testBenchCode: String,
+  waveformImage: String // Base64 encoded image or URL
+});
+
 const assignmentSchema = new mongoose.Schema({
   title: String,
   icon: String,
@@ -31,9 +39,17 @@ const assignmentSchema = new mongoose.Schema({
   createdAt: { type: Date, default: Date.now }
 });
 
-// Create separate models for OOP and C assignments
+const architectureAssignmentSchema = new mongoose.Schema({
+  title: String,
+  icon: String,
+  programs: [architectureProblemSchema],
+  createdAt: { type: Date, default: Date.now }
+});
+
+// Create models for different assignment types
 const Assignment = mongoose.model('Assignment', assignmentSchema);
 const CAssignment = mongoose.model('CAssignment', assignmentSchema);
+const ArchitectureAssignment = mongoose.model('ArchitectureAssignment', architectureAssignmentSchema);
 
 // Routes for OOP Assignments
 app.get('/api/assignments', async (req, res) => {
@@ -64,7 +80,7 @@ app.delete('/api/assignments/:id', async (req, res) => {
   }
 });
 
-// New Routes for C Programming Assignments
+// Routes for C Programming Assignments
 app.get('/api/c-assignments', async (req, res) => {
   try {
     const assignments = await CAssignment.find().sort({ createdAt: -1 });
@@ -88,6 +104,63 @@ app.delete('/api/c-assignments/:id', async (req, res) => {
   try {
     await CAssignment.findByIdAndDelete(req.params.id);
     res.json({ success: true, message: 'C Assignment deleted' });
+  } catch (err) {
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
+// Routes for Computer Architecture Assignments
+app.get('/api/architecture-assignments', async (req, res) => {
+  try {
+    const assignments = await ArchitectureAssignment.find().sort({ createdAt: -1 });
+    res.json({ success: true, data: assignments });
+  } catch (err) {
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
+app.get('/api/architecture-assignments/:id', async (req, res) => {
+  try {
+    const assignment = await ArchitectureAssignment.findById(req.params.id);
+    if (!assignment) {
+      return res.status(404).json({ success: false, message: 'Assignment not found' });
+    }
+    res.json({ success: true, data: assignment });
+  } catch (err) {
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
+app.post('/api/architecture-assignments', async (req, res) => {
+  try {
+    const newAssignment = new ArchitectureAssignment(req.body);
+    const savedAssignment = await newAssignment.save();
+    res.status(201).json({ success: true, data: savedAssignment });
+  } catch (err) {
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
+app.put('/api/architecture-assignments/:id', async (req, res) => {
+  try {
+    const updatedAssignment = await ArchitectureAssignment.findByIdAndUpdate(
+      req.params.id,
+      req.body,
+      { new: true }
+    );
+    if (!updatedAssignment) {
+      return res.status(404).json({ success: false, message: 'Assignment not found' });
+    }
+    res.json({ success: true, data: updatedAssignment });
+  } catch (err) {
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
+app.delete('/api/architecture-assignments/:id', async (req, res) => {
+  try {
+    await ArchitectureAssignment.findByIdAndDelete(req.params.id);
+    res.json({ success: true, message: 'Architecture Assignment deleted' });
   } catch (err) {
     res.status(500).json({ success: false, message: 'Server error' });
   }
