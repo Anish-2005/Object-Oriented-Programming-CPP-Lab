@@ -2,59 +2,61 @@ require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
+const helmet = require('helmet');
+const compression = require('compression');
 const path = require('path');
 
 const app = express();
 
-// Database Connection
-mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/cpp-labs?retryWrites=false', {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-  serverSelectionTimeoutMS: 5000,
-  socketTimeoutMS: 45000
-})
-.then(() => console.log('Connected to MongoDB'))
-.catch(err => {
-  console.error('MongoDB connection error:', err);
-  process.exit(1);
-});
-
-// CORS Configuration
+// Middleware
+app.use(helmet());
+app.use(compression());
 app.use(cors({
   origin: true,
+  credentials: false,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
-  credentials: false,
-  optionsSuccessStatus: 200
+  optionsSuccessStatus: 200,
+  maxAge: 86400 // cache preflight response for 1 day
 }));
-
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Simplified Schemas
+// MongoDB Connection
+mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/cpp-labs', {
+  useNewUrlParser: true,
+  useUnifiedTopology: true
+})
+.then(() => console.log('✅ Connected to MongoDB'))
+.catch(err => {
+  console.error('❌ MongoDB connection error:', err);
+  process.exit(1);
+});
+
+// Schema Definitions
 const problemSchema = new mongoose.Schema({
-  question: { type: String, required: true },
-  code: { type: String, required: true },
-  output: { type: String, required: true }
+  question: String,
+  code: String,
+  output: String
 }, { _id: false });
 
 const architectureProblemSchema = new mongoose.Schema({
-  question: { type: String, required: true },
-  moduleCode: { type: String, required: true },
-  testBenchCode: { type: String, required: true }
+  question: String,
+  moduleCode: String,
+  testBenchCode: String
 }, { _id: false });
 
 const assignmentSchema = new mongoose.Schema({
-  title: { type: String, required: true },
-  icon: { type: String, required: true },
-  problems: { type: [problemSchema], required: true },
+  title: String,
+  icon: String,
+  problems: [problemSchema],
   createdAt: { type: Date, default: Date.now }
 });
 
 const architectureAssignmentSchema = new mongoose.Schema({
-  title: { type: String, required: true },
-  icon: { type: String, required: true },
-  programs: { type: [architectureProblemSchema], required: true },
+  title: String,
+  icon: String,
+  programs: [architectureProblemSchema],
   createdAt: { type: Date, default: Date.now }
 });
 
@@ -63,222 +65,140 @@ const Assignment = mongoose.model('Assignment', assignmentSchema);
 const CAssignment = mongoose.model('CAssignment', assignmentSchema);
 const ArchitectureAssignment = mongoose.model('ArchitectureAssignment', architectureAssignmentSchema);
 const PythonAssignment = mongoose.model('PythonAssignment', assignmentSchema);
+
 // Response Helpers
 const respond = {
-  success: (res, data, status = 200) => {
-    res.status(status).json({ success: true, data });
-  },
+  success: (res, data, status = 200) => res.status(status).json({ success: true, data }),
   error: (res, message, status = 400, details = null) => {
     const response = { success: false, message };
-    if (details && process.env.NODE_ENV !== 'production') {
-      response.details = details;
-    }
+    if (details && process.env.NODE_ENV !== 'production') response.details = details;
     res.status(status).json(response);
   }
 };
 
-// API Routes
+// Routes
 const router = express.Router();
 
-// Architecture Assignments
+function asyncHandler(fn) {
+  return (req, res) => fn(req, res).catch(err => respond.error(res, err.message, 500, err));
+}
+
+// Architecture Assignment Routes
 router.route('/architecture-assignments')
-  .get(async (req, res) => {
-    try {
-      const assignments = await ArchitectureAssignment.find().sort({ createdAt: -1 });
-      respond.success(res, assignments);
-    } catch (err) {
-      respond.error(res, 'Failed to fetch architecture assignments', 500, err);
+  .get(asyncHandler(async (req, res) => {
+    const assignments = await ArchitectureAssignment.find().sort({ createdAt: -1 }).lean();
+    respond.success(res, assignments);
+  }))
+  .post(asyncHandler(async (req, res) => {
+    const { title, programs = [], icon = 'FaMicrochip' } = req.body;
+    if (!title || !programs.length) {
+      return respond.error(res, 'Title and at least one program are required');
     }
-  })
-  .post(async (req, res) => {
-    try {
-      // Validate required fields
-      if (!req.body.title || !req.body.programs?.length) {
-        return respond.error(res, 'Title and at least one program are required', 400);
+
+    const validPrograms = programs.map(({ question, moduleCode, testBenchCode }) => {
+      if (!question || !moduleCode || !testBenchCode) {
+        throw new Error('Each program must have question, moduleCode, and testBenchCode');
       }
+      return { question, moduleCode, testBenchCode };
+    });
 
-      // Validate each program
-      const validatedPrograms = req.body.programs.map(program => {
-        if (!program.question || !program.moduleCode || !program.testBenchCode) {
-          throw new Error('All programs must have question, module code, and test bench code');
-        }
-        return {
-          question: program.question,
-          moduleCode: program.moduleCode,
-          testBenchCode: program.testBenchCode
-        };
-      });
-
-      const newAssignment = new ArchitectureAssignment({
-        title: req.body.title,
-        icon: req.body.icon || 'FaMicrochip',
-        programs: validatedPrograms
-      });
-
-      const savedAssignment = await newAssignment.save();
-      respond.success(res, savedAssignment, 201);
-    } catch (err) {
-      respond.error(res, err.message || 'Failed to create architecture assignment', 500, err);
-    }
-  });
+    const newAssignment = new ArchitectureAssignment({ title, icon, programs: validPrograms });
+    const saved = await newAssignment.save();
+    respond.success(res, saved, 201);
+  }));
 
 router.route('/architecture-assignments/:id')
-  .get(async (req, res) => {
-    try {
-      const assignment = await ArchitectureAssignment.findById(req.params.id);
-      if (!assignment) {
-        return respond.error(res, 'Architecture assignment not found', 404);
-      }
-      respond.success(res, assignment);
-    } catch (err) {
-      respond.error(res, 'Failed to fetch architecture assignment', 500, err);
-    }
-  })
-  .put(async (req, res) => {
-    try {
-      const updatedAssignment = await ArchitectureAssignment.findByIdAndUpdate(
-        req.params.id,
-        req.body,
-        { new: true, runValidators: true }
-      );
-      if (!updatedAssignment) {
-        return respond.error(res, 'Architecture assignment not found', 404);
-      }
-      respond.success(res, updatedAssignment);
-    } catch (err) {
-      respond.error(res, 'Failed to update architecture assignment', 500, err);
-    }
-  })
-  .delete(async (req, res) => {
-    try {
-      const assignment = await ArchitectureAssignment.findByIdAndDelete(req.params.id);
-      if (!assignment) {
-        return respond.error(res, 'Architecture assignment not found', 404);
-      }
-      respond.success(res, { message: 'Architecture assignment deleted successfully' });
-    } catch (err) {
-      respond.error(res, 'Failed to delete architecture assignment', 500, err);
-    }
-  });
+  .get(asyncHandler(async (req, res) => {
+    const doc = await ArchitectureAssignment.findById(req.params.id).lean();
+    if (!doc) return respond.error(res, 'Not found', 404);
+    respond.success(res, doc);
+  }))
+  .put(asyncHandler(async (req, res) => {
+    const updated = await ArchitectureAssignment.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+      runValidators: true
+    }).lean();
+    if (!updated) return respond.error(res, 'Not found', 404);
+    respond.success(res, updated);
+  }))
+  .delete(asyncHandler(async (req, res) => {
+    const deleted = await ArchitectureAssignment.findByIdAndDelete(req.params.id);
+    if (!deleted) return respond.error(res, 'Not found', 404);
+    respond.success(res, { message: 'Deleted successfully' });
+  }));
 
-// OOP Assignments (kept for completeness)
-router.route('/assignments')
-  .get(async (req, res) => {
-    try {
-      const assignments = await Assignment.find().sort({ createdAt: -1 });
-      respond.success(res, assignments);
-    } catch (err) {
-      respond.error(res, 'Failed to fetch OOP assignments', 500, err);
-    }
-  });
+// OOP / C++ / Python Routes (same structure)
+const genericRoutes = (model, name) => {
+  const plural = name.toLowerCase().replace(/\s/g, '-') + 's';
 
-// C++ Assignments (kept for completeness)
-router.route('/c-assignments')
-  .get(async (req, res) => {
-    try {
-      const assignments = await CAssignment.find().sort({ createdAt: -1 });
-      respond.success(res, assignments);
-    } catch (err) {
-      respond.error(res, 'Failed to fetch C++ assignments', 500, err);
-    }
-  });
+  router.route(`/${plural}`)
+    .get(asyncHandler(async (req, res) => {
+      const docs = await model.find().sort({ createdAt: -1 }).lean();
+      respond.success(res, docs);
+    }))
+    .post(asyncHandler(async (req, res) => {
+      const { title, problems = [], icon } = req.body;
+      if (!title || !problems.length) return respond.error(res, 'Title and problems required');
+      const validProblems = problems.map(p => {
+        if (!p.question || !p.code || !p.output) throw new Error('Invalid problem');
+        return p;
+      });
+      const newDoc = new model({ title, icon: icon || 'FaPython', problems: validProblems });
+      const saved = await newDoc.save();
+      respond.success(res, saved, 201);
+    }));
+
+  router.route(`/${plural}/:id`)
+    .get(asyncHandler(async (req, res) => {
+      const doc = await model.findById(req.params.id).lean();
+      if (!doc) return respond.error(res, 'Not found', 404);
+      respond.success(res, doc);
+    }))
+    .put(asyncHandler(async (req, res) => {
+      const updated = await model.findByIdAndUpdate(req.params.id, req.body, {
+        new: true,
+        runValidators: true
+      }).lean();
+      if (!updated) return respond.error(res, 'Not found', 404);
+      respond.success(res, updated);
+    }))
+    .delete(asyncHandler(async (req, res) => {
+      const deleted = await model.findByIdAndDelete(req.params.id);
+      if (!deleted) return respond.error(res, 'Not found', 404);
+      respond.success(res, { message: 'Deleted successfully' });
+    }));
+};
+
+genericRoutes(Assignment, 'Assignment');
+genericRoutes(CAssignment, 'C Assignment');
+genericRoutes(PythonAssignment, 'Python Assignment');
 
 app.use('/api', router);
 
-// ====== Python Assignments Routes ======
-router.route('/python-assignments')
-  .get(async (req, res) => {
-    try {
-      const assignments = await PythonAssignment.find().sort({ createdAt: -1 });
-      respond.success(res, assignments);
-    } catch (err) {
-      respond.error(res, 'Failed to fetch Python assignments', 500, err);
-    }
-  })
-  .post(async (req, res) => {
-    try {
-      if (!req.body.title || !req.body.problems?.length) {
-        return respond.error(res, 'Title and at least one problem are required', 400);
-      }
-
-      const validatedProblems = req.body.problems.map(problem => {
-        if (!problem.question || !problem.code || !problem.output) {
-          throw new Error('All problems must have question, code, and output');
-        }
-        return problem;
-      });
-
-      const newAssignment = new PythonAssignment({
-        title: req.body.title,
-        icon: req.body.icon || 'FaPython',
-        problems: validatedProblems
-      });
-
-      const savedAssignment = await newAssignment.save();
-      respond.success(res, savedAssignment, 201);
-    } catch (err) {
-      respond.error(res, err.message || 'Failed to create Python assignment', 500, err);
-    }
-  });
-
-router.route('/python-assignments/:id')
-  .get(async (req, res) => {
-    try {
-      const assignment = await PythonAssignment.findById(req.params.id);
-      if (!assignment) return respond.error(res, 'Python assignment not found', 404);
-      respond.success(res, assignment);
-    } catch (err) {
-      respond.error(res, 'Failed to fetch Python assignment', 500, err);
-    }
-  })
-  .put(async (req, res) => {
-    try {
-      const updatedAssignment = await PythonAssignment.findByIdAndUpdate(
-        req.params.id,
-        req.body,
-        { new: true, runValidators: true }
-      );
-      if (!updatedAssignment) return respond.error(res, 'Python assignment not found', 404);
-      respond.success(res, updatedAssignment);
-    } catch (err) {
-      respond.error(res, 'Failed to update Python assignment', 500, err);
-    }
-  })
-  .delete(async (req, res) => {
-    try {
-      const assignment = await PythonAssignment.findByIdAndDelete(req.params.id);
-      if (!assignment) return respond.error(res, 'Python assignment not found', 404);
-      respond.success(res, { message: 'Python assignment deleted successfully' });
-    } catch (err) {
-      respond.error(res, 'Failed to delete Python assignment', 500, err);
-    }
-  });
 // Health Check
 app.get('/health', (req, res) => {
   res.status(200).json({
     status: 'OK',
-    timestamp: new Date(),
     uptime: process.uptime(),
+    timestamp: new Date(),
     database: mongoose.connection.readyState === 1 ? 'connected' : 'disconnected'
   });
 });
 
-// 404 Handler
+// 404
 app.use((req, res) => {
   respond.error(res, 'Endpoint not found', 404);
 });
 
-// Error Handler
+// Global Error Handler
 app.use((err, req, res, next) => {
   console.error('Unhandled error:', err);
-  respond.error(res, 'Internal server error', 500, 
-    process.env.NODE_ENV !== 'production' ? err.stack : null);
+  respond.error(res, 'Internal Server Error', 500, err.stack);
 });
 
+// Start Server
 const PORT = process.env.PORT || 5000;
-const server = app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-  console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
+app.listen(PORT, () => {
+  console.log(`🚀 Server running on port ${PORT}`);
+  console.log(`🌱 Environment: ${process.env.NODE_ENV || 'development'}`);
 });
-
-module.exports = server;
