@@ -32,6 +32,14 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Schemas (existing)
+const architectureAssignmentSchema = new mongoose.Schema({
+  title: { type: String, required: true },
+  icon: { type: String, required: true },
+  programs: { type: [architectureProblemSchema], required: true },
+  createdAt: { type: Date, default: Date.now }
+});
+
+
 const problemSchema = new mongoose.Schema({
   question: { type: String, required: true },
   code: { type: String, required: true },
