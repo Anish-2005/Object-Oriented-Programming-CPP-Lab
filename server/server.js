@@ -65,6 +65,7 @@ const Assignment = mongoose.model('Assignment', assignmentSchema);
 const CAssignment = mongoose.model('CAssignment', assignmentSchema);
 const ArchitectureAssignment = mongoose.model('ArchitectureAssignment', architectureAssignmentSchema);
 const PythonAssignment = mongoose.model('PythonAssignment', assignmentSchema);
+const DSAAssignment = mongoose.model('DSAAssignment', assignmentSchema);
 
 // Response Helpers
 const respond = {
@@ -172,6 +173,8 @@ const genericRoutes = (model, name) => {
 genericRoutes(Assignment, 'Assignment');
 genericRoutes(CAssignment, 'C Assignment');
 genericRoutes(PythonAssignment, 'Python Assignment');
+genericRoutes(DSAAssignment, 'DSA Assignment');
+
 
 app.use('/api', router);
 
