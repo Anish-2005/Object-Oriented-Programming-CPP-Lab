@@ -5,6 +5,7 @@ const cors = require('cors');
 const helmet = require('helmet');
 const compression = require('compression');
 const path = require('path');
+const History = require('./models/History');
 
 const app = express();
 
@@ -187,7 +188,38 @@ app.get('/health', (req, res) => {
     database: mongoose.connection.readyState === 1 ? 'connected' : 'disconnected'
   });
 });
+// Save history endpoint
+app.post('/api/history', async (req, res) => {
+  try {
+    const { code, output, errors, language } = req.body;
+    
+    const newHistory = new History({
+      code,
+      output,
+      errors,
+      language
+    });
 
+    const savedHistory = await newHistory.save();
+    res.status(201).json(savedHistory);
+  } catch (error) {
+    console.error('Error saving history:', error);
+    res.status(500).json({ message: 'Error saving history' });
+  }
+});
+
+// Get history endpoint
+app.get('/api/history', async (req, res) => {
+  try {
+    const history = await History.find()
+      .sort({ timestamp: -1 })
+      .limit(10);
+    res.json(history);
+  } catch (error) {
+    console.error('Error fetching history:', error);
+    res.status(500).json({ message: 'Error fetching history' });
+  }
+});
 // 404
 app.use((req, res) => {
   respond.error(res, 'Endpoint not found', 404);
